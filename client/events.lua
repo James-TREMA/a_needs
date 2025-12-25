@@ -51,6 +51,16 @@ RegisterNetEvent('a_needs:client:setThirst', function(value)
     SetThirst(value)
 end)
 
+---Appliquer les dégâts quand faim/soif à 0
+RegisterNetEvent('a_needs:client:applyDamage', function(damage)
+    if type(damage) ~= "number" then return end
+    
+    local playerPed = PlayerPedId()
+    local currentHealth = GetEntityHealth(playerPed)
+    local newHealth = math.max(100, currentHealth - damage)
+    SetEntityHealth(playerPed, newHealth)
+end)
+
 ---Forcer la synchronisation complète
 RegisterNetEvent('a_needs:client:forceSync', function(hunger, thirst)
     if type(hunger) == "number" then

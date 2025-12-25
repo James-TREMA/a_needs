@@ -39,26 +39,43 @@ RegisterNetEvent('a_needs:server:requestData', function()
     spamAttempts[src] = 0
     lastRequestData[src] = now
 
-    local identifier = GetPlayerIdentifier(src)
-    if not identifier then 
-        print(('[^1A_NEEDS^7] Impossible de récupérer l\'identifier pour le joueur %d'):format(src))
-        return 
-    end
+    -- Attendre qu'ESX charge le joueur (asynchrone)
+    CreateThread(function()
+        local xPlayer = nil
+        local attempts = 0
+        local maxAttempts = 10
+        
+        -- Attendre jusqu'à 5 secondes que ESX charge le joueur
+        while not xPlayer and attempts < maxAttempts do
+            xPlayer = ESX.GetPlayerFromId(src)
+            if not xPlayer then
+                attempts = attempts + 1
+                Wait(500)
+            end
+        end
+        
+        if not xPlayer then 
+            print(('[^1A_NEEDS^7] Impossible de récupérer l\'identifier pour le joueur %d après %d secondes'):format(src, maxAttempts * 0.5))
+            return 
+        end
 
-    -- Charger depuis la BDD
-    LoadPlayerStats(identifier, function(hunger, thirst)
-        -- Mettre en cache
-        SetPlayerData(src, identifier, hunger, thirst)
+        -- Charger depuis la BDD
+        LoadPlayerStats(xPlayer.identifier, function(hunger, thirst)
+            -- Mettre en cache
+            SetPlayerData(src, xPlayer.identifier, hunger, thirst)
 
-        -- Envoyer au client
-        TriggerClientEvent('a_needs:client:sync', src, {
-            hunger = hunger,
-            thirst = thirst
-        })
+            -- Envoyer au client
+            TriggerClientEvent('a_needs:client:sync', src, {
+                hunger = hunger,
+                thirst = thirst
+            })
 
-        print(('[^2A_NEEDS^7] Données chargées pour joueur %d: hunger=%d, thirst=%d'):format(
-            src, math.floor(hunger), math.floor(thirst)
-        ))
+            if Config.Debug then
+                print(('[^2A_NEEDS^7] Données chargées pour joueur %d: hunger=%d, thirst=%d'):format(
+                    src, math.floor(hunger), math.floor(thirst)
+                ))
+            end
+        end)
     end)
 end)
 

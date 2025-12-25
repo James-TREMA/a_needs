@@ -28,7 +28,8 @@ server_scripts {
     'server/database.lua',
     'server/events.lua',
     'server/threads.lua',
-    'server/exports.lua'
+    'server/exports.lua',
+    'server/commands.lua'
 }
 
 -- Fichiers UI

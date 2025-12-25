@@ -166,6 +166,35 @@ Configurable via `Config.UseOxInventory` dans `config/config.lua`.
 
 **Valeurs par défaut si non configurées** : +20 faim, +30 soif
 
+## Commandes Admin
+
+Deux commandes sont disponibles pour les administrateurs (nécessite les permissions ACE) :
+
+### /needs
+
+Restaure votre propre faim et soif à 100%.
+
+```cfg
+# Configuration dans server.cfg
+add_ace group.admin command.needs allow
+```
+
+**Usage :** `/needs`
+
+### /needsheal [ID]
+
+Restaure la faim et la soif d'un joueur spécifique à 100%.
+
+```cfg
+# Configuration dans server.cfg
+add_ace group.admin command.needsheal allow
+```
+
+**Usage :** `/needsheal 1` (restaure le joueur ID 1)
+
+**Paramètres :**
+- `ID` (number) : ID du joueur cible
+
 ## Structure des Fichiers
 
 ```

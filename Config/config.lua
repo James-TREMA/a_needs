@@ -29,8 +29,8 @@ Config.MaxHunger = 100
 Config.MaxThirst = 100
 
 -- Taux de décroissance (par seconde)
-Config.HungerDecayRate = 0.05  -- ~5% par minute
-Config.ThirstDecayRate = 0.08  -- ~8% par minute
+Config.HungerDecayRate = 0.02  -- ~2% par minute (~50 min pour vider)
+Config.ThirstDecayRate = 0.03  -- ~3% par minute (~33 min pour vider)
 
 -- Seuils d'alerte UI
 Config.CriticalThreshold = 20  -- Seuil critique (rouge)

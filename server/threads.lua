@@ -48,24 +48,18 @@ CreateThread(function()
             if data then
                 -- Vérifier si faim ou soif à 0
                 if data.hunger <= 0 or data.thirst <= 0 then
-                    local ped = GetPlayerPed(src)
+                    local damage = Config.DamageWhenEmpty
                     
-                    if ped and ped > 0 then
-                        local damage = Config.DamageWhenEmpty
-                        
-                        -- Double dégâts si les deux sont à 0
-                        if data.hunger <= 0 and data.thirst <= 0 then
-                            damage = damage * 2
-                        end
-                        
-                        -- Appliquer les dégâts via natives FiveM
-                        local currentHealth = GetEntityHealth(ped)
-                        local newHealth = math.max(100, currentHealth - damage)  -- 100 = mort dans GTA
-                        SetEntityHealth(ped, newHealth)
-                        
-                        if Config.Debug then
-                            print(('[A_NEEDS] Dégâts appliqués: joueur %d, -%d HP (nouveau: %d)'):format(src, damage, newHealth))
-                        end
+                    -- Double dégâts si les deux sont à 0
+                    if data.hunger <= 0 and data.thirst <= 0 then
+                        damage = damage * 2
+                    end
+                    
+                    -- Envoyer au client pour appliquer les dégâts
+                    TriggerClientEvent('a_needs:client:applyDamage', src, damage)
+                    
+                    if Config.Debug then
+                        print(('[A_NEEDS] Dégâts appliqués: joueur %d, -%d HP'):format(src, damage))
                     end
                 end
             end
