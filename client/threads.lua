@@ -16,8 +16,12 @@ CreateThread(function()
     -- Demander les données au serveur
     TriggerServerEvent('a_needs:server:requestData')
     
-    -- Attendre un peu puis afficher l'UI
-    Wait(2000)
+    -- Attendre que les données soient initialisées (synchronisation serveur)
+    while not PlayerState.isInitialized do
+        Wait(100)
+    end
+    
+    -- Maintenant afficher l'UI avec les vraies données
     ShowUI(true)
     SendNUIUpdate()
 end)

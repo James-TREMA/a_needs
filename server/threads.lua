@@ -48,9 +48,9 @@ CreateThread(function()
             if data then
                 -- Vérifier si faim ou soif à 0
                 if data.hunger <= 0 or data.thirst <= 0 then
-                    local xPlayer = ESX.GetPlayerFromId(src)
+                    local ped = GetPlayerPed(src)
                     
-                    if xPlayer then
+                    if ped and ped > 0 then
                         local damage = Config.DamageWhenEmpty
                         
                         -- Double dégâts si les deux sont à 0
@@ -58,10 +58,14 @@ CreateThread(function()
                             damage = damage * 2
                         end
                         
-                        -- Appliquer les dégâts via ESX
-                        local currentHealth = xPlayer.getHealth()
-                        local newHealth = math.max(0, currentHealth - damage)
-                        xPlayer.setHealth(newHealth)
+                        -- Appliquer les dégâts via natives FiveM
+                        local currentHealth = GetEntityHealth(ped)
+                        local newHealth = math.max(100, currentHealth - damage)  -- 100 = mort dans GTA
+                        SetEntityHealth(ped, newHealth)
+                        
+                        if Config.Debug then
+                            print(('[A_NEEDS] Dégâts appliqués: joueur %d, -%d HP (nouveau: %d)'):format(src, damage, newHealth))
+                        end
                     end
                 end
             end

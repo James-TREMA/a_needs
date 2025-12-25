@@ -52,7 +52,15 @@ end
 function AddHunger(amount)
     if type(amount) ~= "number" or amount <= 0 then return end
     
+    local oldHunger = PlayerState.hunger
     PlayerState.hunger = math.min(Config.MaxHunger, PlayerState.hunger + amount)
+    
+    if Config.Debug then
+        print(('[A_NEEDS CLIENT] AddHunger: +%d faim (ancien: %d, nouveau: %d)'):format(
+            amount, math.floor(oldHunger), math.floor(PlayerState.hunger)
+        ))
+    end
+    
     SendNUIUpdate()
     
     -- Effet visuel
@@ -64,7 +72,15 @@ end
 function AddThirst(amount)
     if type(amount) ~= "number" or amount <= 0 then return end
     
+    local oldThirst = PlayerState.thirst
     PlayerState.thirst = math.min(Config.MaxThirst, PlayerState.thirst + amount)
+    
+    if Config.Debug then
+        print(('[A_NEEDS CLIENT] AddThirst: +%d soif (ancien: %d, nouveau: %d)'):format(
+            amount, math.floor(oldThirst), math.floor(PlayerState.thirst)
+        ))
+    end
+    
     SendNUIUpdate()
     
     -- Effet visuel

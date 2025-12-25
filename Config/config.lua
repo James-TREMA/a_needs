@@ -16,6 +16,11 @@ Config.ResourceName = 'a_needs'
 -- true = Développement (logs actifs)
 Config.Debug = false
 
+-- Utilisation d'ox_inventory pour la conversion automatique des valeurs status
+-- true = Convertit les valeurs esx_status (200000 → 20)
+-- false = Utilise les valeurs directes sans conversion (20 = 20)
+Config.UseOxInventory = true
+
 -- ============================================-- PARAMÈTRES SYSTÈME
 -- ============================================
 
@@ -52,7 +57,7 @@ Config.DefaultState = {
 Config.Database = {
     -- true = Table custom zombie_player_stats (Protocol87)
     -- false = Table users ESX standard
-    useCustomTable = true,
+    useCustomTable = false,
     customTableName = 'zombie_player_stats'
 }
 

@@ -117,107 +117,54 @@ exports['a_needs']:SetThirst(source, 100)
 
 ### Intégration avec ox_inventory
 
-#### Résumé rapide (3 étapes)
+**Configuration automatique** : a_needs lit les valeurs `client.status.hunger` et `client.status.thirst` depuis les définitions d'items ox_inventory.
 
-1. **Ouvrir** `ox_inventory/data/items.lua`
-2. **Ajouter** `server = { export = 'a_needs.consumeFood' }` aux items de nourriture
-3. **Restart** les ressources : `restart ox_inventory` puis `restart a_needs`
+#### Configuration rapide (2 étapes)
 
----
-
-#### Configuration détaillée
-
-**Important :** ox_inventory utilise un système d'exports pour les items consommables (PAS d'event `ox_inventory:itemUsed`).
-
-**Étape 1 : Modifier vos items dans `ox_inventory/data/items.lua`**
+1. **Modifier vos items dans `ox_inventory/data/items.lua`** :
 
 ```lua
--- AVANT (item basique)
-['bread'] = {
-    label = 'Pain',
-    weight = 150
-}
-
--- APRÈS (item avec a_needs)
 ['bread'] = {
     label = 'Pain',
     weight = 150,
     client = {
-        anim = 'eating',
-        prop = 'v_res_fa_bread03',
-        usetime = 2500
+        status = { hunger = 200000 },  -- Sera converti en +20 faim
+        anim = 'eating'
     },
     server = {
-        export = 'a_needs.consumeFood'  -- ← Ajoutez cette ligne
+        export = 'a_needs.consumeFood'
     }
 }
 
--- Exemple pour une boisson
 ['water'] = {
     label = 'Eau',
     weight = 330,
     client = {
-        anim = { dict = 'mp_player_intdrink', clip = 'loop_bottle' },
-        prop = { model = `prop_ld_flow_bottle`, pos = vec3(0.03, 0.03, 0.02), rot = vec3(0.0, 0.0, -1.5) },
-        usetime = 2500
+        status = { thirst = 200000 },  -- Sera converti en +20 soif
+        anim = { dict = 'mp_player_intdrink', clip = 'loop_bottle' }
     },
     server = {
-        export = 'a_needs.consumeDrink'  -- ← Pour les boissons
+        export = 'a_needs.consumeDrink'
     }
 }
 ```
 
-**Valeurs par défaut (déjà incluses dans a_needs) :**
-- `consumeFood` : +20 de faim
-- `consumeDrink` : +30 de soif
+2. **Restart** : `restart ox_inventory` puis `restart a_needs`
 
----
+#### Conversion automatique
 
-#### Personnalisation avancée (optionnel)
+Le système convertit automatiquement les valeurs esx_status (200000 = 20%) :
+- `hunger = 200000` → +20 faim
+- `thirst = 200000` → +20 soif
 
-Pour créer des valeurs différentes par item (ex: burger plus nourrissant que pain), éditez `a_needs/server/exports.lua` :
+Configurable via `Config.UseOxInventory` dans `config/config.lua`.
 
-```lua
--- Ajouter à la fin du fichier server/exports.lua
+#### Exports disponibles
 
--- Export pour burger (plus nourrissant)
-exports('consumeBurger', function(event, item, inventory, slot, data)
-    if event == 'usedItem' then
-        exports['a_needs']:AddHunger(inventory.id, 40)  -- 40 au lieu de 20
-    end
-end)
+- `a_needs.consumeFood` : Nourriture (lit `client.status.hunger`)
+- `a_needs.consumeDrink` : Boisson (lit `client.status.thirst`)
 
--- Export pour soda (plus désaltérant)
-exports('consumeSoda', function(event, item, inventory, slot, data)
-    if event == 'usedItem' then
-        exports['a_needs']:AddThirst(inventory.id, 50)  -- 50 au lieu de 30
-    end
-end)
-```
-
-Puis dans `ox_inventory/data/items.lua` :
-
-```lua
-['burger'] = {
-    label = 'Burger',
-    weight = 220,
-    server = {
-        export = 'a_needs.consumeBurger'  -- Utilise l'export personnalisé
-    }
-}
-
-['soda'] = {
-    label = 'Soda',
-    weight = 350,
-    server = {
-        export = 'a_needs.consumeSoda'  -- Utilise l'export personnalisé
-    }
-}
-```
-
----
-
-**Note technique :** Les `client.status` dans ox_inventory sont envoyés vers `esx_status`, pas vers a_needs. Il faut obligatoirement utiliser `server.export`.
+**Valeurs par défaut si non configurées** : +20 faim, +30 soif
 
 ## Structure des Fichiers
 
@@ -288,7 +235,9 @@ Config.AntiCheat = {
 ### Flux de données
 
 ```
-Connexion → Chargement BDD → Cache serveur → Client (UI)
+Démarrage serveur → Initialisation threads → Chargement BDD
+    ↓
+Connexion joueur → Cache serveur → Sync Client (UI)
     ↓
 Décroissance (serveur) → Cache mis à jour → Client sync
     ↓

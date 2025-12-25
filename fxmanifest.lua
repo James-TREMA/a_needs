@@ -1,9 +1,9 @@
 fx_version 'cerulean'
 game 'gta5'
 
-author 'Protocol87'
+author 'Ahero'
 description 'Système de faim et soif - NUI Svelte'
-version '2.0.0'
+version '0.0.1'
 
 lua54 'yes'
 
@@ -11,7 +11,7 @@ ui_page 'ui/dist/index.html'
 
 -- Configuration partagée (client + serveur)
 shared_scripts {
-    'Config/config.lua'
+    'config/config.lua'
 }
 
 -- Scripts client (ordre important)
