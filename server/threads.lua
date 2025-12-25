@@ -1,35 +1,73 @@
 -- ============================================
 -- A_NEEDS - Server Threads
--- Thread unique pour gérer tous les joueurs
+-- Architecture Delta-Sync optimisée pour la scalabilité
 -- ============================================
 
 -- ============================================
--- THREAD: Gestion de la décroissance
+-- THREAD 1: Calcul de la décroissance (1s)
+-- Calcule les valeurs sans envoyer au réseau
 -- ============================================
 
 CreateThread(function()
     while true do
-        Wait(1000)  -- Toutes les secondes
+        Wait(1000)  -- Calcul toutes les secondes
         
         -- Parcourir tous les joueurs en cache
         for src, data in pairs(PlayerData) do
             if data then
                 -- Décroissance de la faim
-                local newHunger = math.max(0, data.hunger - Config.HungerDecayRate)
+                data.hunger = math.max(0, data.hunger - Config.HungerDecayRate)
                 
                 -- Décroissance de la soif
-                local newThirst = math.max(0, data.thirst - Config.ThirstDecayRate)
+                data.thirst = math.max(0, data.thirst - Config.ThirstDecayRate)
                 
-                -- Mettre à jour le cache
-                data.hunger = newHunger
-                data.thirst = newThirst
+                -- Mettre à jour le timestamp
                 data.lastUpdate = os.time()
+            end
+        end
+    end
+end)
+
+-- ============================================
+-- THREAD 2: Synchronisation réseau (delta-sync)
+-- Envoie uniquement si changement significatif
+-- ============================================
+
+CreateThread(function()
+    while true do
+        Wait(Config.SyncInterval)  -- 5000ms par défaut
+        
+        -- Parcourir tous les joueurs en cache
+        for src, data in pairs(PlayerData) do
+            if data then
+                -- Initialiser les valeurs de dernière sync si absentes
+                if not data.lastSyncHunger then
+                    data.lastSyncHunger = data.hunger
+                    data.lastSyncThirst = data.thirst
+                end
                 
-                -- Envoyer la mise à jour au client pour l'UI
-                TriggerClientEvent('a_needs:client:sync', src, {
-                    hunger = newHunger,
-                    thirst = newThirst
-                })
+                -- Calculer les deltas
+                local hungerDelta = math.abs(data.hunger - data.lastSyncHunger)
+                local thirstDelta = math.abs(data.thirst - data.lastSyncThirst)
+                
+                -- Sync seulement si changement >= seuil
+                if hungerDelta >= Config.SyncDeltaThreshold or thirstDelta >= Config.SyncDeltaThreshold then
+                    -- Envoyer la mise à jour au client pour l'UI
+                    TriggerClientEvent('a_needs:client:sync', src, {
+                        hunger = data.hunger,
+                        thirst = data.thirst
+                    })
+                    
+                    -- Sauvegarder les valeurs de la dernière sync
+                    data.lastSyncHunger = data.hunger
+                    data.lastSyncThirst = data.thirst
+                    
+                    if Config.Debug then
+                        print(('[A_NEEDS] Sync joueur %d: H=%.1f T=%.1f (delta H=%.2f T=%.2f)'):format(
+                            src, data.hunger, data.thirst, hungerDelta, thirstDelta
+                        ))
+                    end
+                end
             end
         end
     end

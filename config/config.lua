@@ -40,6 +40,10 @@ Config.WarningThreshold = 40   -- Seuil d'avertissement (orange)
 Config.DamageWhenEmpty = 1     -- Dégâts quand à 0
 Config.DamageInterval = 5000   -- Intervalle des dégâts (ms)
 
+-- Optimisation réseau (delta-sync)
+Config.SyncInterval = 5000     -- Intervalle de sync client (ms) - 5s par défaut
+Config.SyncDeltaThreshold = 1  -- Sync seulement si changement >= ce seuil
+
 -- ============================================
 -- ÉTAT PAR DÉFAUT DU JOUEUR
 -- ============================================

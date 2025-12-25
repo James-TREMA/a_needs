@@ -57,11 +57,17 @@ end
 ---@param hunger number Valeur de faim
 ---@param thirst number Valeur de soif
 function SetPlayerData(source, identifier, hunger, thirst)
+    local validHunger = ValidateInput(hunger) or Config.DefaultState.hunger
+    local validThirst = ValidateInput(thirst) or Config.DefaultState.thirst
+    
     PlayerData[source] = {
         identifier = identifier,
-        hunger = ValidateInput(hunger) or Config.DefaultState.hunger,
-        thirst = ValidateInput(thirst) or Config.DefaultState.thirst,
-        lastUpdate = os.time()
+        hunger = validHunger,
+        thirst = validThirst,
+        lastUpdate = os.time(),
+        -- Delta-sync tracking
+        lastSyncHunger = validHunger,
+        lastSyncThirst = validThirst
     }
 end
 
