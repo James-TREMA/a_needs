@@ -1,0 +1,78 @@
+# ============================================
+# HUNGER-THIRST - Git Ignore
+# Fichiers et dossiers à exclure du dépôt
+# ============================================
+
+# ============================================
+# NODE MODULES & DEPENDENCIES
+# ============================================
+ui/node_modules/
+ui/package-lock.json
+node_modules/
+package-lock.json
+
+# ============================================
+# BUILD & CACHE
+# ============================================
+ui/dist/
+*.cache
+.cache/
+cache/
+
+# ============================================
+# LOGS & DEBUG
+# ============================================
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ============================================
+# SYSTÈME D'EXPLOITATION
+# ============================================
+# MacOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Linux
+*~
+.directory
+
+# ============================================
+# ÉDITEURS & IDE
+# ============================================
+.vscode/
+.idea/
+*.swp
+*.swo
+*.swn
+.project
+.settings/
+*.sublime-workspace
+*.sublime-project
+
+# ============================================
+# ENVIRONNEMENT & CONFIG LOCALE
+# ============================================
+.env
+.env.local
+.env.*.local
+
+# ============================================
+# TEMPORAIRES & BACKUP
+# ============================================
+*.tmp
+*.temp
+*.bak
+*.backup
+*.old
+*~
