@@ -71,3 +71,4 @@ end)
 
 if Config.Debug then
     print('[^2A_NEEDS^7] Thread serveur initialisé')
+end

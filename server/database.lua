@@ -93,6 +93,6 @@ CreateThread(function()
     Wait(1000)
     InitializeDatabase()
     if Config.Debug then
-    print('[^2A_NEEDS^7] Base de données initialisée')
-            end
+        print('[^2A_NEEDS^7] Base de données initialisée')
+    end
 end)
